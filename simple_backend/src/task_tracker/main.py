@@ -3,8 +3,8 @@ from dotenv import load_dotenv
 from fastapi import HTTPException, FastAPI, Depends
 from rest_framework import status
 from typing import Annotated
-from task import Task, TaskAdd, TaskUpdate
-from task_json import TasksJsonbin
+from task_model import Task, TaskAdd, TaskUpdate
+from task_json_model import TasksJsonbin
 from llm_model import LLMAssistant
 
 app = FastAPI()
@@ -29,7 +29,7 @@ def get_tasks():
 def create_task(task: Annotated[TaskAdd, Depends()]):
     solution_llm = None
     if task.description is not None:
-        solution_llm = llm_assistant.assist_llm(task.description)
+        solution_llm = llm_assistant.request(task.description)
     obj = Task(**task.dict())
     tasks.add(obj, solution_llm)
     return 'Ok'
@@ -40,7 +40,7 @@ def update_task(task_id: str, task: Annotated[TaskUpdate, Depends()]):
     try:
         solution_llm = None
         if task.description is not None:
-            solution_llm = llm_assistant.assist_llm(task.description)
+            solution_llm = llm_assistant.request(task.description)
         tasks.up_data(task_id, task, solution_llm)
         return 'Ok'
     except KeyError:

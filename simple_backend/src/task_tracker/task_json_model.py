@@ -1,9 +1,10 @@
 import requests
-from task import Task, TaskUpdate
+from abc_model import BaseHTTPClient
+from task_model import Task, TaskUpdate
 from typing import List, Dict
 
 
-class TasksJsonbin:
+class TasksJsonbin(BaseHTTPClient):
 
     def __init__(self, api_key: str, bin_id: str):
         self.url = f"https://api.jsonbin.io/v3/b/{bin_id}"
@@ -18,7 +19,7 @@ class TasksJsonbin:
         response.raise_for_status()
         return 'Ok'
 
-    def _read_data(self) -> List[Dict]:
+    def request(self) -> List[Dict]:
         response = requests.get(url=self.url, headers=self.headers)
         response.raise_for_status()
         return response.json()['record']
@@ -30,10 +31,10 @@ class TasksJsonbin:
         raise KeyError(f"Задача с task_id {task_id} не найдена")
 
     def get_all_tasks(self) -> List:
-        return [Task(**dct) for dct in self._read_data()]
+        return [Task(**dct) for dct in self.request()]
 
     def add(self, task: Task, solution_llm: str):
-        tasks = self._read_data()
+        tasks = self.request()
         if solution_llm is not None:
             task.solution_llm = solution_llm
         tasks.append(task.dict())
@@ -41,7 +42,7 @@ class TasksJsonbin:
         return 'ok'
 
     def up_data(self, task_id: str, task: TaskUpdate, solution_llm: str):
-        tasks = self._read_data()
+        tasks = self.request()
         dct = self._search_task(task_id, tasks)
         dct_up = {key: value for key, value in task.__dict__.items() if value is not None}
         dct.update(dct_up)
@@ -51,7 +52,7 @@ class TasksJsonbin:
         return 'ok'
 
     def delete(self, task_id: str):
-        tasks = self._read_data()
+        tasks = self.request()
         dct = self._search_task(task_id, tasks)
         tasks.pop(tasks.index(dct))
         self._write_data(tasks)
