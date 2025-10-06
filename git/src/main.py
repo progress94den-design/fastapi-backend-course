@@ -1,6 +1,7 @@
 import json
 import os
 
+
 def load_books(filename='library.json'):
     """
     Загрузка списка книг из JSON-файла.
@@ -14,12 +15,14 @@ def load_books(filename='library.json'):
         except json.JSONDecodeError:
             return []
 
-def save_books(books, filename='library.json'):
+
+def saving_books(books, filename='library.json'):
     """
     Сохранение списка книг в JSON-файл.
     """
     with open(filename, 'w', encoding='utf-8') as file:
         json.dump(books, file, ensure_ascii=False, indent=4)
+
 
 def list_books(books):
     """
@@ -31,6 +34,7 @@ def list_books(books):
     for idx, book in enumerate(books, start=1):
         result_lines.append(f"{idx}. {book['title']} | {book['author']} | {book['year']}")
     return "\n".join(result_lines)
+
 
 def add_book(books, title, author, year):
     """
@@ -45,6 +49,7 @@ def add_book(books, title, author, year):
     # Создаём НОВЫЙ список, добавляя new_book
     return books + [new_book]
 
+
 def remove_book(books, title):
     """
     Принимает текущий список книг и название книги для удаления.
@@ -52,6 +57,7 @@ def remove_book(books, title):
     """
     # Фильтруем список: оставляем только те книги, у которых название не совпадает с переданным
     return [book for book in books if book['title'].lower() != title.lower()]
+
 
 def search_books(books, keyword):
     """
@@ -63,6 +69,7 @@ def search_books(books, keyword):
         book for book in books
         if keyword_lower in book['title'].lower() or keyword_lower in book['author'].lower()
     ]
+
 
 def main():
     """
@@ -94,7 +101,7 @@ def main():
             # Получаем новый список с добавленной книгой
             new_books = add_book(books, title, author, year)
             books = new_books  # Обновляем переменную, чтобы сохранить изменения
-            save_books(books)  # Сразу сохраняем в файл
+            saving_books(books)  # Сразу сохраняем в файл
             print("Книга добавлена!")
 
         elif choice == '3':
@@ -102,9 +109,9 @@ def main():
             title_to_remove = input("Введите название книги, которую хотите удалить: ").strip()
 
             new_books = remove_book(books, title_to_remove)
-            if len(new_books) < len(books):
+            if len(new_books) > len(books):
                 books = new_books
-                save_books(books)
+                saving_books(books)
                 print("Книга удалена!")
             else:
                 print("Книга с таким названием не найдена.")
@@ -119,12 +126,13 @@ def main():
             else:
                 print("Ничего не найдено.")
 
-        elif choice == '5':
+        elif choice == '6':
             print("Выход из программы.")
             break
 
         else:
             print("Некорректный ввод. Попробуйте ещё раз.")
+
 
 if __name__ == "__main__":
     main()
