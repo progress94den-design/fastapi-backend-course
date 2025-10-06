@@ -49,5 +49,5 @@ jobs:
     - name: Check code formatting
       run: |
         echo "Checking code formatting..."
-        ruff format --check .
+        ruff check .
         echo "Formatting check completed!"
