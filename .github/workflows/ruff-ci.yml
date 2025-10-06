@@ -44,10 +44,3 @@ jobs:
         echo "Running ruff check..."
         ruff check .
         echo "Ruff check completed successfully!"
-
-    # Шаг 5: Проверить форматирование кода
-    - name: Check code formatting
-      run: |
-        echo "Checking code formatting..."
-        ruff check .
-        echo "Formatting check completed!"
